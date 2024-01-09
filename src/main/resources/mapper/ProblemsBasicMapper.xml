@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demo.mapper.ProblemsBasicMapper">
+    <select id="getProblemList" resultType="com.example.demo.entity.ProblemsBasic">
+        select * from problems_basic
+        <where>
+            <if test="keyword != null and keyword != ''">
+                (title like concat('%',#{keyword},'%')
+                or content like concat('%',#{keyword},'%'))
+            </if>
+            <if test="categoryId != null and categoryId != ''">
+                and id in (select problem_id from problem_category
+                       where category_id = #{categoryId})
+            </if>
+        </where>
+        limit #{page},#{limit}
+    </select>
+    <select id="getProblemSize" resultType="long">
+        select COUNT(*) from problems_basic
+        <where>
+            <if test="keyword != null and keyword != ''">
+                (title like concat('%',#{keyword},'%')
+                or content like concat('%',#{keyword},'%'))
+            </if>
+            <if test="categoryId != null and categoryId != ''">
+                and id in (select problem_id from problem_category
+                where category_id = #{categoryId})
+            </if>
+        </where>
+    </select>
+    <update id="updateSubmitNum">
+        update problems_basic set submit_num = submit_num+1
+        <if test="isRight">
+            ,pass_num = pass_num+1
+        </if>
+        where identity = #{identity}
+    </update>
+</mapper>

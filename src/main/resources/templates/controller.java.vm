@@ -1,0 +1,81 @@
+package ${package.Controller};
+
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import io.swagger.v3.oas.annotations.Operation;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.stereotype.Controller;
+import javax.annotation.Resource;
+import java.util.List;
+import com.example.demo.common.Result;
+import $!{package.Service}.$!{table.serviceName};
+import ${package.Entity}.${entity};
+
+#if(${superControllerClassPackage})
+import ${superControllerClassPackage};
+#end
+
+/**
+ * <p>
+ * $!{table.comment} 前端控制器
+ * </p>
+ *
+ * @author ${author}
+ * @since ${date}
+ */
+#if(${restControllerStyle})
+@RestController
+#else
+@Controller
+#end
+@RequestMapping("#if(${package.ModuleName})/${package.ModuleName}#end/#if(${controllerMappingHyphenStyle})${controllerMappingHyphen}#else${table.entityPath}#end")
+#if(${kotlin})
+class ${table.controllerName}#if(${superControllerClass}) : ${superControllerClass}()#end
+
+#else
+    #if(${superControllerClass})
+    public class ${table.controllerName} extends ${superControllerClass} {
+    #else
+    public class ${table.controllerName} {
+    #end
+
+    @Resource
+    private ${table.serviceName} ${table.entityPath}Service;
+
+    @PostMapping
+    @Operation(summary = "新增或修改")
+    public Result save(@RequestBody ${entity} ${table.entityPath}) {
+        return ${table.entityPath}Service.saveOrUpdate(${table.entityPath})?Result.success():Result.error();
+    }
+    @PostMapping("/del/batch")
+    @Operation(summary = "批量删除")
+    public Result deleteBatch(@RequestBody List<Integer> ids) {
+        return ${table.entityPath}Service.removeByIds(ids)?Result.success():Result.error();
+    }
+    @DeleteMapping("/{id}")
+    @Operation(summary = "删除")
+    public Result delete(@PathVariable Integer id) {
+        return ${table.entityPath}Service.removeById(id)?Result.success():Result.error();
+    }
+
+    @GetMapping
+    @Operation(summary = "查询所有")
+    public Result findAll() {
+        return Result.success(${table.entityPath}Service.list());
+    }
+
+    @GetMapping("/{id}")
+    @Operation(summary = "查询单个")
+    public Result findOne(@PathVariable Integer id) {
+        return Result.success(${table.entityPath}Service.getById(id));
+    }
+
+    @GetMapping("/page")
+    @Operation(summary = "分页查询")
+    public Result findPage(@RequestParam Integer pageNum,
+                                    @RequestParam Integer pageSize) {
+        return Result.success(${table.entityPath}Service.page(new Page<>(pageNum, pageSize)));
+    }
+
+    }
+
+#end

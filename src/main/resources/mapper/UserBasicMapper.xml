@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demo.mapper.UserBasicMapper">
+    <update id="updateSubmitNum">
+        update user_basic set submit_num = submit_num+1
+        <if test="isRight">
+            ,pass_num = pass_num+1
+        </if>
+        where identity = #{identity}
+    </update>
+</mapper>
